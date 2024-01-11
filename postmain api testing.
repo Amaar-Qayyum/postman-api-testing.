@@ -1,0 +1,60 @@
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
+public class ApiPostExample {
+    public static void main(String[] args) {
+        try {
+            // Specify the URL of the API endpoint
+            String apiUrl = "https://jsonplaceholder.typicode.com/posts";
+
+            // Create a URL object
+            URL url = new URL(apiUrl);
+
+            // Open a connection to the URL
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+            // Set the request method to POST
+            connection.setRequestMethod("POST");
+
+            // Enable input and output streams
+            connection.setDoOutput(true);
+
+            // Set request headers (optional)
+            connection.setRequestProperty("Content-Type", "application/json");
+
+            // Create the request payload (JSON in this example)
+            String requestBody = "{\"title\":\"New Post\",\"body\":\"This is the body of the new post.\",\"userId\":1}";
+
+            // Write the payload to the request body
+            try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream())) {
+                wr.writeBytes(requestBody);
+                wr.flush();
+            }
+
+            // Get the HTTP response code
+            int responseCode = connection.getResponseCode();
+            System.out.println("Response Code: " + responseCode);
+
+            // Read the response from the input stream
+            try (BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+                String inputLine;
+                StringBuilder response = new StringBuilder();
+
+                while ((inputLine = in.readLine()) != null) {
+                    response.append(inputLine);
+                }
+
+                // Print the response
+                System.out.println("Response: " + response.toString());
+            }
+
+            // Close the connection
+            connection.disconnect();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
